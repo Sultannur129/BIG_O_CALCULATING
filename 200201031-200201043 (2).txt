@@ -1,0 +1,2180 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+#define byt 700
+
+
+FILE *fp;
+void check_File(int,int );
+int Recursive(int,int );
+int Control_loop(int,int );
+void Space_Complexity(int );
+void Running_Time(int ,int );
+
+
+int a=0;
+
+void check_File(int empty,int cont )  //Dosya iceriginin kontrolü
+{
+
+
+
+    if(empty==0 && cont==0)
+    {
+        printf("Dosya bostur.\n");
+
+    }
+
+    else if(empty>0 && cont==0)
+    {
+
+        printf("Dosya bos degildir ve icindeki c kodu degildir.\n");
+    }
+
+    else if(empty>0 && cont>0)
+    {
+
+        printf("Dosya bos degildir ve icindeki c kodudur.\n");
+    }
+
+    else
+    {
+
+
+        printf("Dosya bostur.\n");
+    }
+
+
+
+
+}
+
+
+
+char get_line[byt][byt];
+
+int Recursive(int line,int Size) //Recursive fonksiyonu
+{
+
+    char set[byt][byt];
+    int r=0,s=0;
+    int islem=0;
+
+
+
+    for(int j=0; get_line[line][j]!='('; j++)
+    {
+
+        if(get_line[line][j]==' ')
+        {
+
+            set[r][s]='\0';
+            r++;
+            s=0;
+        }
+        else
+        {
+
+            set[r][s]=get_line[line][j];
+            s++;
+        }
+
+    }
+
+    for(int j=line+1; !strstr(get_line[j],"int main"); j++)
+    {
+
+        if(strstr(get_line[j],set[1]) && strchr(get_line[j],'(') && strchr(get_line[j],')') && strchr(get_line[j],';') )
+        {
+
+            for(int i=0; get_line[j][i]!=';'; i++)
+            {
+                if(get_line[j][i]=='(')
+                {
+                    islem++;
+                }
+            }
+
+
+        }
+
+    }
+    //printf("%d\n",islem);
+
+
+
+    return islem;
+
+}
+
+int come1=0;
+int Control_loop(int line,int Size)
+{
+
+
+    //int j=line;
+    int control;
+    int w_control;
+    int d_control;
+    int statement=0;
+    int push=line+1;
+    int add;
+
+    char set[100][100];
+    char t_set[100][100];
+    char d_set[100][100];
+    int r=0,s=0;
+    int r1=0,s1=0;
+    int r2=0,s2=0;
+
+    int derece=0;
+    int logi=0;
+    int k_statement=0;
+    int k2_statement=0;
+    int k1_statement=0;
+
+    for(int k=line; k<Size; k++) //Alýnan fonksiyon satýrýndan dosyanýn sonuna kadar
+    {
+        // printf("1.fora girdi.\n");
+
+
+
+
+        if(strstr(get_line[k],"for")) //Satýr for sa for un içi parçalanýr.
+        {
+            statement++;
+            //printf("for ifine girdi.\n");
+            for(int s=0; s<=strlen(get_line[k]); s++) //Forun baslangýç parantezi bulundu.
+            {
+                //printf("3.fora girdi\n");
+                if(get_line[k][s]=='(')
+                {
+                    add=s;
+                }
+            }
+            add+=1;//forun parantezden sonraki elemandan baþladý.
+
+            for(int t=add; get_line[k][t]!=')'; t++) //for un bulunduðu satýrdaki kapalý paranteze kadar ayrýlýyor
+            {
+                //printf("4.fora girdi\n");
+                if(get_line[k][t]==';')
+                {
+
+                    set[r][s]='\0';
+                    r++;
+                    s=0;
+                }
+
+                else
+                {
+
+                    set[r][s]=get_line[k][t];
+                    s++;
+                }
+
+
+            }//Ayrýlma parantez sonu
+
+            int gt=0;
+            int pop=statement;
+            int tut=0;
+
+            for(int j=push; !strchr(get_line[j],'}'); j++)
+            {
+
+                if(strchr(get_line[j],'{'))
+                {
+                    gt++;
+                }
+            }
+
+            for(int j=push; j<Size; j++)
+            {
+
+                if(gt==pop)
+                {
+                    tut=j;
+                }
+                --gt;
+            }
+
+
+
+            if(strstr(set[2],"++") || strstr(set[2],"--")) //For un içi analiz edildi.
+            {
+                //printf("1. ife girdi.\n");
+                for(int l=k; l<=tut; l++)
+                {
+
+                    if(strchr(get_line[l],'{'))
+                    {
+
+                        line=l+1;
+                    }
+                }
+                derece++;
+
+            }//++ sonu for içi
+
+            else if((strchr(set[2],'+')  && strchr(set[2],'=')) || (strchr(set[2],'-') && strchr(set[2],'=')) )
+            {
+
+                //printf("2. else ife girdi.\n");
+                for(int l=k; l<=tut; l++)
+                {
+
+                    if(strchr(get_line[l],'{'))
+                    {
+
+                        line=l+1;
+                    }
+                }
+                derece++;
+            }//+= sonu for içi
+
+            else if((strchr(set[2],'*')  && strchr(set[2],'=')) || (strchr(set[2],'/') && strchr(set[2],'=')))
+            {
+
+                //printf("3. ife girdi.\n");
+                for(int l=k; l<=tut; l++)
+                {
+
+                    if(strchr(get_line[l],'{'))
+                    {
+
+                        line=l+1;
+                    }
+                }
+                logi++;
+            }//*= sonu
+
+            else
+            {
+
+                break;
+
+            }
+
+            //printf("derece:%d\n",derece);
+            //printf("logi:%d\n",logi);
+
+            r=0;
+            s=0;
+
+
+
+        }// for koþulunun sonu
+
+
+
+        else if(strstr(get_line[k],"while") && !strchr(get_line[k],';')) //satýr while sa
+        {
+            statement++;
+            //printf("%s",get_line[k]);
+            //printf("while a girdi else if.\n");
+            int pos=0;
+            for(int p=0; p<=strlen(get_line[k]); p++) //while ýn baþlangýç parantezi bulundu
+            {
+                //printf("1.fora girdi.\n");
+                if(get_line[k][p]=='(')
+                {
+
+                    pos=p;
+                }
+
+            }//baþlangýç parantezi sonu
+
+            pos+=1;//Parantezden sonraki karakterden sonra basladý
+
+            for(int j=pos; get_line[k][j]!=')'; j++) //while parçalara ayrýldý
+            {
+                //printf("2.fora girdi.\n");
+                if(get_line[k][j]=='<' || get_line[k][j]=='>' || get_line[k][j]=='=' || get_line[k][j]=='n')
+                {
+
+                    t_set[r1][s1]='\0';
+                    r1++;
+                    s=0;
+
+                }
+                else
+                {
+
+                    t_set[r1][s1]=get_line[k][j];
+                    s1++;
+                }
+
+
+            }//parçalara ayýrma forun sonu
+
+            //printf("t_set[0]:%s\n",t_set[0]);
+            //printf("t_set[1]:%s\n",t_set[1]);
+            int gecici1=statement;
+            // printf("statement:%d\n",statement);
+            int calc=0;
+            int boyut;
+            for(int i=push; !strchr(get_line[i],'}'); i++) //süslü parantez sayýsý bulundu.
+            {
+
+                if(strchr(get_line[i],'{'))
+                {
+                    calc++;
+                    //printf("{:%d\n",calc);
+                }
+
+
+            }//forun sonu
+
+            for(int i=push; i<Size; i++) //while ýn kapama parantezini bulma
+            {
+
+                //printf("push:%d\n",push);
+
+                if(strchr(get_line[i],'}'))
+                {
+                    if(calc==gecici1)
+                    {
+                        boyut=i;
+                        //printf("boyut:%d\n",boyut);
+                    }
+
+                    //printf("}:%d\n",calc);
+                    --calc;
+                }
+
+            }//for un sonu
+            //printf("boyut:%d\n",boyut);//kapama parantezinin konumu
+
+            for(int j=k; j<=boyut; j++) //while da bulunan satýrdan kapama parantezine kadar
+            {
+                //printf("3. fora girdi.\n");
+
+                //printf("%s",get_line[j]);
+
+                if((strstr(get_line[j],t_set[0])  && strstr(get_line[j],"++") &&  !strstr(get_line[j],"for")) || (strstr(get_line[j],t_set[1])  && strstr(get_line[j],"++") &&  !strstr(get_line[j],"for")) ||  (strstr(get_line[j],t_set[0]) && strstr(get_line[j],"--") &&  !strstr(get_line[j],"for")) ||  (strstr(get_line[j],t_set[1]) && strstr(get_line[j],"--") &&  !strstr(get_line[j],"for")))
+                {
+                    //printf("ife girdi.\n");
+                    //printf("%s",get_line[j]);
+                    w_control=1;
+
+                }//ifin sonu
+
+                else if((strstr(get_line[j],t_set[0]) && strchr(get_line[j],'+') && strchr(get_line[j],'=') &&  !strstr(get_line[j],"for")) || (strstr(get_line[j],t_set[0]) && strchr(get_line[j],'-') && strchr(get_line[j],'=')) || (strstr(get_line[j],t_set[1]) && strchr(get_line[j],'+') && strchr(get_line[j],'=')) || (strstr(get_line[j],t_set[1]) && strchr(get_line[j],'-') && strchr(get_line[j],'=')))
+                {
+
+                    //printf("1.Else ife girdi.\n");
+                    //printf("%s",get_line[j]);
+                    int num=0;
+                    for(int p=0; p<=strlen(get_line[j]); p++)
+                    {
+                        //printf("5. fora girdi.\n");
+                        if(get_line[j][p]>='0' && get_line[j][p]<='9')
+                        {
+
+                            num++;
+
+                        }
+                    }//for un sonu
+                    if(num>0)
+                    {
+
+                        w_control=2;
+                    }
+
+
+                }//else if in sonu
+
+                else if((strstr(get_line[j],t_set[0])  && strchr(get_line[j],'*') && strchr(get_line[j],'=') &&  !strstr(get_line[j],"for")) || (strstr(get_line[j],t_set[0]) && strchr(get_line[j],'/') && strchr(get_line[j],'=') &&  !strstr(get_line[j],"for")) || (strstr(get_line[j],t_set[1])  && strchr(get_line[j],'*') && strchr(get_line[j],'=') &&  !strstr(get_line[j],"for")) || (strstr(get_line[j],t_set[1]) && strchr(get_line[j],'/') && strchr(get_line[j],'=') &&  !strstr(get_line[j],"for")))
+                {
+                    //printf("2.Else ife girdi.\n");
+                    //printf("%s",get_line[j]);
+                    int num=0;
+                    for(int p=0; p<=strlen(get_line[j]); p++)
+                    {
+                        //printf("6. fora girdi.\n");
+                        if(get_line[j][p]>='0' && get_line[j][p]<='9')
+                        {
+
+                            num++;
+
+                        }
+                    }//for un sonu
+                    if(num>0)
+                    {
+
+                        w_control=3;
+                    }
+
+                }//else ifin sonu
+
+
+                else
+                {
+
+                }//else in sonu
+                //printf("derece:%d\n",derece);
+                //printf("logi:%d\n",logi);
+
+
+
+
+
+                s1=0;
+                r1=0;
+
+
+            }//while ýn forunun sonu
+
+            if(w_control==1)
+            {
+                derece++;
+                for(int j=k; j<Size; j++)
+                {
+
+                    if(strchr(get_line[j],'{'))
+                    {
+                        //printf("%s",get_line[j]);
+                        line=j+1;
+                        break;
+
+                    }
+                }
+            }
+            else if(w_control==2)
+            {
+                derece++;
+                for(int j=k; j<Size; j++)
+                {
+
+                    if(strchr(get_line[j],'{'))
+                    {
+                        //printf("%s",get_line[j]);
+                        line=j+1;
+                        break;
+
+                    }
+                }
+            }
+            else if(w_control==3)
+            {
+                logi++;
+                for(int j=k; j<Size; j++)
+                {
+
+                    if(strchr(get_line[j],'{'))
+                    {
+                        //printf("%s",get_line[j]);
+                        line=j+1;
+                        break;
+
+                    }
+                }
+            }
+            else
+            {
+
+            }
+
+
+
+
+
+            //printf("derece:%d\n",derece);
+            //printf("logi:%d\n",logi);
+        }//while ýn sonu
+
+        else if(strstr(get_line[k],"do")) //do satýrý
+        {
+
+            int st=0;
+            statement++;//süslü parantez sayýldý.
+            int boyut=0;
+
+            int gecici2=statement;
+            //printf("statement:%d\n",statement);
+            for(int i=push; !strchr(get_line[i],'}'); i++) //süslü parantez sayýsý bulundu.
+            {
+
+                if(strchr(get_line[i],'{'))
+                {
+                    st++;
+                    //printf("st {:%d\n",st);
+                }
+
+
+            }//forun sonu
+
+            for(int i=push; i<Size; i++) //do nun  kapama parantezini bulma
+            {
+
+
+
+                if(strchr(get_line[i],'}'))
+                {
+
+                    if(st==gecici2)
+                    {
+                        boyut=i;
+                        //printf("do:boyut:%d\n",boyut);
+                    }
+                    st--;
+                    //printf("}:%d\n",st);
+
+                }
+
+            }//for un sonu
+
+            int hold=0;
+            int start;
+            for(int j=boyut; j<Size; j++) //do nun whilenýn satýrý bulundu.
+            {
+
+                if(strstr(get_line[j],"while") && strchr(get_line[j],';'))
+                {
+                    //printf("%s",get_line[j]);
+                    hold=j;
+                    break;
+                }
+            }//for un sonu do nun while ný bulmak için
+            //printf("hold:%d\n",hold);
+            for(int j=0; j<=strlen(get_line[hold]); j++) //while ýn baþlangýç parantezini bulma
+            {
+
+                if(get_line[hold][j]=='(')
+                {
+                    start=j;
+                }
+
+            }//for un sonu
+            start+=1;//parantezden sonraki karakter
+
+            for(int j=start; get_line[hold][j]!=')'; j++) //while ýn içi ayýklanýyor
+            {
+
+                if(get_line[hold][j]=='<' || get_line[hold][j]=='>' || get_line[hold][j]=='=')
+                {
+
+                    d_set[r2][s2]='\0';
+                    r2++;
+                    s2=0;
+
+                }
+                else
+                {
+
+                    d_set[r2][s2]=get_line[hold][j];
+                    s2++;
+                }
+
+
+            }//forun sonu
+
+
+            for(int j=k; j<=(boyut+1); j++)
+            {
+
+                if((strstr(get_line[j],d_set[0]) && strstr(get_line[j],"++")) || (strstr(get_line[j],d_set[1]) && strstr(get_line[j],"++")) || (strstr(get_line[j],d_set[0]) && strstr(get_line[j],"--")) || (strstr(get_line[j],d_set[1]) && strstr(get_line[j],"--")))
+                {
+
+                    d_control=0;
+
+                }//++ ya da -- sonu
+
+                else if((strstr(get_line[j],d_set[0]) && strchr(get_line[j],'+') && strchr(get_line[j],'=')) || (strstr(get_line[j],d_set[1]) && strchr(get_line[j],'+') && strchr(get_line[j],'='))  || (strstr(get_line[j],d_set[0]) && strchr(get_line[j],'-') && strchr(get_line[j],'=')) || (strstr(get_line[j],d_set[1]) && strchr(get_line[j],'-') && strchr(get_line[j],'=')))
+                {
+
+                    int num=0;
+                    for(int i=0; i<=strlen(get_line[j]); i++)
+                    {
+
+                        if(get_line[j][i]>='0' && get_line[j][i]<='9')
+                        {
+
+                            num++;
+
+                        }
+
+
+                    }//for un sonu
+
+                    if(num>0)
+                    {
+                        d_control=1;
+                    }
+
+                }//+= ya da-= in sonu
+
+
+                else if((strstr(get_line[j],d_set[0]) && strchr(get_line[j],'*') && strchr(get_line[j],'=')) || (strstr(get_line[j],d_set[1]) && strchr(get_line[j],'*') && strchr(get_line[j],'='))  || (strstr(get_line[j],d_set[0]) && strchr(get_line[j],'/') && strchr(get_line[j],'=')) || (strstr(get_line[j],d_set[1]) && strchr(get_line[j],'/') && strchr(get_line[j],'=')))
+                {
+
+                    int num=0;
+                    for(int i=0; i<=strlen(get_line[j]); i++)
+                    {
+
+                        if(get_line[j][i]>='0' && get_line[j][i]<='9')
+                        {
+
+                            num++;
+
+                        }
+
+
+                    }//for un sonu
+
+                    if(num>0)
+                    {
+                        d_control=2;
+                    }
+
+                }//*= ya da /= in sonu
+
+
+
+                else
+                {
+
+
+                }//else in sonu
+
+                if(strchr(get_line[j],'{'))
+                {
+                    //printf("{:%d\n",j);
+                    line=j+1;
+                }
+
+
+            }//for sonu
+
+            if(d_control==0)
+            {
+                derece++;
+            }
+
+            else if(d_control==1)
+            {
+
+                derece++;
+            }
+            else if(d_control==2)
+            {
+
+                logi++;
+            }
+            else
+            {
+
+            }
+
+            r2=0;
+            s2=0;
+
+        }//do sonu
+
+
+        if(strchr(get_line[k],'}'))
+        {
+            k_statement++;
+            //printf("k_statement:%d\n",k_statement);
+        }
+        if(strchr(get_line[k],'}'))
+        {
+            k1_statement++;
+            //printf("k_statement:%d\n",k_statement);
+        }
+
+
+        if(k_statement==statement && k_statement!=0 && statement!=0) //parantez sayýsý eþitse
+        {
+            //printf("statement:%d\n",statement);
+
+            if(derece>logi) //derece ve loglu kýyaslama yapýldý
+            {
+                if(come1<derece)
+                {
+                    come1=derece;
+                    control=0;
+                }
+
+            }//ifin sonu
+            else if(derece<logi)
+            {
+                if(come1<logi)
+                {
+                    come1=logi;
+                    control=1;
+                }
+            }//else ifin sonu
+            else if(derece!=0 && derece==logi)
+            {
+                come1=derece;
+                control=2;
+
+            }//else ifin sonu
+            else
+            {
+
+            }//else in sonu
+
+            //printf("derece:%d\n",derece);
+            //printf("logi:%d\n",logi);
+
+            derece=0;
+            logi=0;
+            statement=0;
+            k_statement=0;
+            line=k+1;
+
+
+        }//ifin sonu
+
+        if(k1_statement==k2_statement && k1_statement!=0 && k2_statement!=0)
+        {
+            line=k+1;
+
+        }//ifin sonu
+
+    }//forun sonu
+
+
+
+
+
+
+    if(control==0)
+    {
+        return 0;
+    }
+    else if(control==1)
+    {
+        return 1;
+    }
+    else if(control==2)
+    {
+        return 2;
+    }
+    else
+    {
+        return 3;
+    }
+
+
+}//fonksiyonun bitiþi
+
+
+
+void Space_Complexity(int Size) //Fonksiyon baþlangýcý
+{
+
+    char extract[byt][byt];
+    //printf("Space Complexity");
+    int r=0,s=0;
+    //char buffer[byt];
+    int space=0;
+    int num=0;
+    int fnum=0;
+    int fspace=0;
+    int cnum=0;
+    int cspace=0;
+    //int arr_num=0;
+    int powi=0;
+    int arr[20];
+    int arr1[20];
+    int arr2[50];
+    int arr3[20];
+    int i=0,t=0,p=0,m=0;
+    //int sum=0;
+    int gecici=0;
+    //char *pcr;
+
+    for(int j=0; j<Size; j++)
+    {
+
+
+
+
+        if(strstr(get_line[j],"int") && !strstr(get_line[j],"%d") && strchr(get_line[j],';'))
+        {
+            //printf("gt:%s",get_line[j]);
+
+
+
+            for(int k=0; k<=strlen(get_line[j]); k++) //satýr ayýklandý
+            {
+
+                if(get_line[j][k]==',')
+                {
+                    extract[r][s]='\0';
+                    r++;
+                    s=0;
+                }
+
+                else
+                {
+                    extract[r][s]=get_line[j][k];
+                    s++;
+                }
+            }//forun sonu
+
+            for(int k=0; k<=r; k++)
+            {
+                if(!strchr(extract[k],'[') && !strchr(extract[k],']'))
+                {
+                    //printf("%s\n",extract[k]);
+                    num++;
+                    space=4*num;
+                    //printf("\nnum:%d\n",num);
+                }
+
+                else if(strchr(extract[k],'[') && strchr(extract[k],']'))
+                {
+                    //printf("%s ",extract[k]);
+                    for(int l=0; l<=strlen(extract[k]); l++)
+                    {
+
+                        if(extract[k][l]=='[')
+                        {
+                            powi++;
+
+                        }
+                    }
+
+                    arr[t]=powi;
+                    arr2[i]=arr[t];
+
+                    //printf("%s\n",buffer);
+                    i++;
+                    t++;
+
+                }//else ifin sonu
+
+
+            }//forun sonu
+
+            //printf("space:%d\n",space);
+
+            r=0,s=0;
+            powi=0;
+
+
+        }//int ifin sonu
+
+
+
+        else if(!strchr(get_line[j],';') && strchr(get_line[j],'(') && strchr(get_line[j],')') && (!strstr(get_line[j],"if") || !strstr(get_line[j],"while")))
+        {
+            //printf("gt:%s",get_line[j]);
+            int tut=0;
+            for(int k=0; k<=strlen(get_line[j]); k++)
+            {
+
+                if(get_line[j][k]=='(')
+                {
+                    tut=k;
+                    break;
+                }
+
+            }
+            tut+=1;
+
+            for(int k=tut; get_line[j][k]!=')'; k++) //satýr ayýklandý
+            {
+
+                if(get_line[j][k]==',')
+                {
+                    extract[r][s]='\0';
+                    r++;
+                    s=0;
+                }
+
+                else
+                {
+                    extract[r][s]=get_line[j][k];
+                    s++;
+                }
+            }//forun sonu
+
+            for(int k=0; k<=r; k++)
+            {
+                if((strstr(extract[k],"int") || strstr(extract[k],"float")) && !strchr(extract[k],'[') && !strchr(extract[k],']'))
+                {
+                    //printf("%s\n",extract[k]);
+                    num++;
+                    space=4*num;
+                    //printf("\nnum:%d\n",num);
+                }
+
+                else if(strstr(extract[k],"double") && !strchr(extract[k],'[') && !strchr(extract[k],']'))
+                {
+                    //printf("%s\n",extract[k]);
+                    fnum++;
+                    fspace=4*fnum;
+                    //printf("\nnum:%d\n",num);
+                }
+
+                else if((strstr(extract[k],"char") || strstr(extract[k],"bool")) && !strchr(extract[k],'[') && !strchr(extract[k],']'))
+                {
+                    //printf("%s\n",extract[k]);
+                    cnum++;
+                    cspace=8*cnum;
+                    //printf("\nnum:%d\n",num);
+                }
+                else if(strstr(extract[k],"double") && strchr(extract[k],'[') && strchr(extract[k],']'))
+                {
+                    //printf("%s ",extract[k]);
+                    for(int l=0; l<=strlen(extract[k]); l++)
+                    {
+
+                        if(extract[k][l]=='[')
+                        {
+                            powi++;
+
+                        }
+                    }
+
+                    arr1[m]=powi;
+                    arr2[i]=arr1[m];
+
+                    //printf("%s\n",buffer);
+                    i++;
+                    m++;
+
+                }//else ifin sonu
+
+                else if((strstr(extract[k],"bool") || strstr(extract[k],"char")) && strchr(extract[k],'[') && strchr(extract[k],']'))//bool char array
+                {
+                    //printf("%s ",extract[k]);
+                    for(int l=0; l<=strlen(extract[k]); l++)
+                    {
+
+                        if(extract[k][l]=='[')
+                        {
+                            powi++;
+
+                        }
+                    }
+
+                    arr3[p]=powi;
+                    arr2[i]=arr3[p];
+
+                    //printf("%s\n",buffer);
+                    i++;
+                    p++;
+
+                }//else ifin sonu
+
+
+            }//forun sonu
+
+            //printf("space:%d\n",space);
+
+            r=0,s=0;
+            powi=0;
+
+
+        }// else if fonksiyon ifin sonu
+
+
+
+        else if(strstr(get_line[j],"float") && strchr(get_line[j],';') && (!strstr(get_line[j],"%f") || !strstr(get_line[j],"%c") || !strstr(get_line[j],"%d")))
+        {
+            //printf("gt:%s",get_line[j]);
+            for(int k=0; k<=strlen(get_line[j]); k++) //satýr ayýklandý
+            {
+                if(get_line[j][k]==',')
+                {
+
+                    extract[r][s]='\0';
+                    r++;
+                    s=0;
+                }
+
+                else
+                {
+
+                    extract[r][s]=get_line[j][k];
+                    s++;
+                }
+            }//forun sonu
+
+            for(int k=0; k<=r; k++)
+            {
+
+
+                if(!strchr(extract[k],'[') && !strchr(extract[k],']'))
+                {
+                    //printf("%s ",extract[k]);
+                    num++;
+                    space=4*num;
+
+                    //printf("\nnum:%d\n",num);
+
+
+                }
+
+                else if( strchr(extract[k],'[') && strchr(extract[k],']'))
+                {
+                    //printf("%s\n",extract[k]);
+                    for(int l=0; l<=strlen(extract[k]); l++)
+                    {
+
+                        if(extract[k][l]=='[')
+                        {
+                            powi++;
+
+                        }
+                    }
+
+                    arr[t]=powi;
+                    arr2[i]=arr[t];
+
+                    //printf("%s\n",buffer);
+                    i++;
+                    t++;
+
+                }//else ifin sonu
+
+
+            }//forun sonu
+
+            //printf("space:%d\n",space);
+
+            r=0,s=0;
+            powi=0;
+
+        }//float else  ifin sonu
+
+
+        else if(strstr(get_line[j],"double") && strchr(get_line[j],';') && (!strstr(get_line[j],"%f") || !strstr(get_line[j],"%d") || !strstr(get_line[j],"%c")))
+        {
+            //printf("gt:%s",get_line[j]);
+            for(int k=0; k<=strlen(get_line[j]); k++) //satýr ayýklandý
+            {
+                if(get_line[j][k]==',')
+                {
+
+                    extract[r][s]='\0';
+                    r++;
+                    s=0;
+                }
+
+                else
+                {
+
+                    extract[r][s]=get_line[j][k];
+                    s++;
+                }
+            }//forun sonu
+
+            for(int k=0; k<=r; k++)
+            {
+
+
+                if(!strchr(extract[k],'[') && !strchr(extract[k],']'))
+                {
+                    //printf("%s\n",extract[k]);
+                    fnum++;
+                    fspace=8*fnum;
+
+                    //printf("\nnum:%d\n",num);
+
+
+                }
+
+                else if( strchr(extract[k],'[') && strchr(extract[k],']'))
+                {
+                    printf("%s\n",extract[k]);
+                    for(int l=0; l<=strlen(extract[k]); l++)
+                    {
+
+                        if(extract[k][l]=='[')
+                        {
+
+                            powi++;
+
+                        }
+                    }
+
+                    arr1[m]=powi;
+                    arr2[i]=arr1[m];
+
+                    //printf("%s\n",buffer);
+                    i++;
+                    m++;
+
+                }//else ifin sonu
+
+
+            }//forun sonu
+
+            //printf("space:%d\n",space);
+
+            r=0,s=0;
+            powi=0;
+
+        }//double else ifin sonu
+
+
+        else if(strstr(get_line[j],"char") && strchr(get_line[j],';') && (!strstr(get_line[j],"%f") || !strstr(get_line[j],"%d") || !strstr(get_line[j],"%c")))
+        {
+            //printf("gt:%s",get_line[j]);
+            for(int k=0; k<=strlen(get_line[j]); k++) //satýr ayýklandý
+            {
+
+
+
+                if(get_line[j][k]==',')
+                {
+
+                    extract[r][s]='\0';
+                    r++;
+                    s=0;
+                }
+
+                else
+                {
+
+                    extract[r][s]=get_line[j][k];
+                    s++;
+                }
+            }//forun sonu
+
+            for(int k=0; k<=r; k++)
+            {
+
+
+                if(!strchr(extract[k],'[') && !strchr(extract[k],']'))
+                {
+                    //printf("%s\n",extract[k]);
+                    cnum++;
+                    cspace=1*cnum;
+
+                    //printf("\nnum:%d\n",num);
+
+
+                }
+
+                else if(strchr(extract[k],'[') && strchr(extract[k],']'))
+                {
+                    //printf("%s\n",extract[k]);
+                    for(int l=0; l<=strlen(extract[k]); l++)
+                    {
+
+                        if(extract[k][l]=='[')
+                        {
+
+                            powi++;
+
+                        }
+                    }
+
+                    arr3[p]=powi;
+                    arr2[i]=arr3[p];
+
+                    //printf("%s\n",buffer);
+                    i++;
+                    p++;
+
+                }//else ifin sonu
+
+
+            }//forun sonu
+
+            //printf("space:%d\n",space);
+
+            r=0,s=0;
+            powi=0;
+
+        }//char else ifin sonu
+
+        else if(strstr(get_line[j],"return") && !strchr(get_line[j],'0') && strchr(get_line[j],';') && (!strstr(get_line[j],"%d") || !strstr(get_line[j],"%f") || !strstr(get_line[j],"%c") ))
+        {
+            //printf("gt:%s",get_line[j]);
+            for(int k=0; k<=strlen(get_line[j]); k++) //satýr ayýklandý
+            {
+
+
+
+                if(get_line[j][k]==',')
+                {
+
+                    extract[r][s]='\0';
+                    r++;
+                    s=0;
+                }
+
+                else
+                {
+
+                    extract[r][s]=get_line[j][k];
+                    s++;
+                }
+            }//forun sonu
+
+            for(int k=0; k<=r; k++)
+            {
+
+
+                if(!strchr(extract[k],'[') && !strchr(extract[k],']'))
+                {
+                    //printf("%s ",extract[k]);
+                    num++;
+                    space=4*num;
+
+                    //printf("\nnum:%d\n",num);
+
+
+                }
+
+                else if(strchr(extract[k],'[') && strchr(extract[k],']'))
+                {
+                    //printf("%s ",extract[k]);
+                    for(int l=0; l<=strlen(extract[k]); l++)
+                    {
+
+                        if(extract[k][l]=='[')
+                        {
+
+                            powi++;
+
+                        }
+                    }
+
+                    arr[t]=powi;
+                    arr2[i]=arr[t];
+
+                    //printf("%s\n",buffer);
+                    i++;
+                    t++;
+
+                }//else ifin sonu
+
+
+            }//forun sonu
+
+            //printf("space:%d\n",space);
+
+            r=0,s=0;
+            powi=0;
+
+        }//return else ifin sonu
+
+
+        else if(strstr(get_line[j],"bool") && strchr(get_line[j],';') && (!strstr(get_line[j],"%d") || !strstr(get_line[j],"%f")))
+        {
+            //printf("gt:%s",get_line[j]);
+            for(int k=0; k<=strlen(get_line[j]); k++) //satýr ayýklandý
+            {
+
+
+
+                if(get_line[j][k]==',')
+                {
+
+                    extract[r][s]='\0';
+                    r++;
+                    s=0;
+                }
+
+                else
+                {
+
+                    extract[r][s]=get_line[j][k];
+                    s++;
+                }
+            }//forun sonu
+
+            for(int k=0; k<=r; k++)
+            {
+
+
+                if(!strchr(extract[k],'[') && !strchr(extract[k],']'))
+                {
+                    //printf("%s ",extract[k]);
+                    cnum++;
+                    cspace=1*cnum;
+
+                    //printf("\nnum:%d\n",num);
+
+
+                }
+
+                else if(strchr(extract[k],'[') && strchr(extract[k],']'))
+                {
+                    //printf("%s ",extract[k]);
+                    for(int l=0; l<=strlen(extract[k]); l++)
+                    {
+
+                        if(extract[k][l]=='[')
+                        {
+
+                            powi++;
+
+                        }
+                    }
+
+                    arr3[p]=powi;
+                    arr2[i]=arr3[p];
+
+                    //printf("%s\n",buffer);
+                    i++;
+                    p++;
+
+                }//else ifin sonu
+
+
+            }//forun sonu
+
+            //printf("space:%d\n",space);
+
+            r=0,s=0;
+            powi=0;
+
+        }//bool else ifin sonu
+
+
+
+
+
+
+
+    }//en dýþtaki forun sonu*/
+
+    //int gecici=0;
+
+
+    printf("Yer karmasikligi:");
+    for(int j=0; j<i; j++)
+    {
+
+        //printf(" %d + ",arr2[j]);
+        if(gecici<arr2[j])
+        {
+            gecici=arr2[j];
+        }
+
+    }
+
+    for(int j=0; j<=t; j++)
+    {
+
+        if(arr[j]>0)
+        {
+            printf("4n^%d + ",arr[j]);
+        }
+    }
+
+    for(int j=0; j<=m; j++)
+    {
+        if(arr1[j]>0)
+        {
+            printf("8n^%d + ",arr1[j]);
+        }
+    }
+    for(int j=0; j<=p; j++)
+    {
+        if(arr3[j]>0)
+        {
+            printf("n^%d + ",arr3[j]);
+        }
+    }
+
+
+    printf("%d",cspace+fspace+space);
+    if(gecici!=0)
+    {
+        printf(" (O(n^%d))\n",gecici);
+    }
+    else
+    {
+        printf(" (O(1))\n");
+    }
+    //printf("Yer:%d\n",space);
+
+
+
+
+
+}//Space complexity sonu*/
+
+
+void Recursive_Space_Complexity(int ln,int Size)
+{
+
+    char extract[byt][byt];
+    //printf("Space Complexity");
+    int r=0,s=0;
+    //char buffer[byt];
+    int space=0;
+    int num=0;
+    int fnum=0;
+    int fspace=0;
+    int cnum=0;
+    int cspace=0;
+    //int arr_num=0;
+    int powi=0;
+    int arr[20];
+    int arr1[20];
+    int arr2[50];
+    int arr3[20];
+    int i=0,t=0,m=0,p=0;
+    //int sum=0;
+    int gecici=0;
+    //char *pcr;
+
+    for(int j=ln; j<Size; j++)
+    {
+
+        if(strstr(get_line[j],"int")  && !strstr(get_line[j],"%d") && strchr(get_line[j],';'))
+        {
+            //printf("gt:%s",get_line[j]);
+            for(int k=0; k<=strlen(get_line[j]); k++) //satýr ayýklandý
+            {
+
+
+
+                if(get_line[j][k]==',')
+                {
+
+                    extract[r][s]='\0';
+                    r++;
+                    s=0;
+                }
+
+                else
+                {
+
+                    extract[r][s]=get_line[j][k];
+                    s++;
+                }
+            }//forun sonu
+
+            for(int k=0; k<=r; k++)
+            {
+
+
+                if(!strchr(extract[k],'[') && !strchr(extract[k],']'))
+                {
+                    printf("%s\n",extract[k]);
+                    num++;
+                    space=4*num;
+                    //printf("\nnum:%d\n",num);
+
+
+                }
+
+                else if(strchr(extract[k],'[') && strchr(extract[k],']'))
+                {
+                    printf("%s ",extract[k]);
+                    for(int l=0; l<=strlen(extract[k]); l++)
+                    {
+
+                        if(extract[k][l]=='[')
+                        {
+
+                            powi++;
+
+                        }
+                    }
+
+                    arr[t]=powi;
+                    arr2[i]=arr[t];
+
+                    //printf("%s\n",buffer);
+                    i++;
+                    t++;
+
+                }//else ifin sonu
+
+
+            }//forun sonu
+
+            //printf("space:%d\n",space);
+
+            r=0,s=0;
+            powi=0;
+
+
+        }//int ifin sonu
+
+
+
+        else if(strstr(get_line[j],"float") && strchr(get_line[j],';') && (!strstr(get_line[j],"%f") || !strstr(get_line[j],"%c") || !strstr(get_line[j],"%d")))
+        {
+            //printf("gt:%s",get_line[j]);
+            for(int k=0; k<=strlen(get_line[j]); k++) //satýr ayýklandý
+            {
+
+
+
+                if(get_line[j][k]==',')
+                {
+
+                    extract[r][s]='\0';
+                    r++;
+                    s=0;
+                }
+
+                else
+                {
+
+                    extract[r][s]=get_line[j][k];
+                    s++;
+                }
+            }//forun sonu
+
+            for(int k=0; k<=r; k++)
+            {
+
+
+                if(!strchr(extract[k],'[') && !strchr(extract[k],']'))
+                {
+                    //printf("%s ",extract[k]);
+                    num++;
+                    space=4*num;
+
+                    //printf("\nnum:%d\n",num);
+
+
+                }
+
+                else if(strchr(extract[k],'[') && strchr(extract[k],']'))
+                {
+                    //printf("%s\n",extract[k]);
+                    for(int l=0; l<=strlen(extract[k]); l++)
+                    {
+
+                        if(extract[k][l]=='[')
+                        {
+
+                            powi++;
+
+                        }
+                    }
+
+                    arr[t]=powi;
+                    arr2[i]=arr[t];
+
+                    //printf("%s\n",buffer);
+                    i++;
+                    t++;
+
+                }//else ifin sonu
+
+
+            }//forun sonu
+
+            //printf("space:%d\n",space);
+
+            r=0,s=0;
+            powi=0;
+
+        }//float else  ifin sonu
+
+
+        else if(strstr(get_line[j],"double")  && strchr(get_line[j],';') && (!strstr(get_line[j],"%f") || !strstr(get_line[j],"%d") || !strstr(get_line[j],"%c")))
+        {
+            //printf("gt:%s",get_line[j]);
+            for(int k=0; k<=strlen(get_line[j]); k++) //satýr ayýklandý
+            {
+
+
+
+                if(get_line[j][k]==',')
+                {
+
+                    extract[r][s]='\0';
+                    r++;
+                    s=0;
+                }
+
+                else
+                {
+
+                    extract[r][s]=get_line[j][k];
+                    s++;
+                }
+            }//forun sonu
+
+            for(int k=0; k<=r; k++)
+            {
+
+
+                if( !strchr(extract[k],'[') && !strchr(extract[k],']'))
+                {
+                    //printf("%s\n",extract[k]);
+                    fnum++;
+                    fspace=8*fnum;
+
+                    //printf("\nnum:%d\n",num);
+
+
+                }
+
+                else if( strchr(extract[k],'[') && strchr(extract[k],']'))
+                {
+                    //printf("%s\n",extract[k]);
+                    for(int l=0; l<=strlen(extract[k]); l++)
+                    {
+
+                        if(extract[k][l]=='[')
+                        {
+
+                            powi++;
+
+                        }
+                    }
+
+                    arr1[m]=powi;
+                    arr2[i]=arr1[m];
+
+                    //printf("%s\n",buffer);
+                    i++;
+                    m++;
+
+                }//else ifin sonu
+
+
+            }//forun sonu
+
+            //printf("space:%d\n",space);
+
+            r=0,s=0;
+            powi=0;
+
+        }//double else ifin sonu
+
+
+        else if(strstr(get_line[j],"char") && strchr(get_line[j],';') && (!strstr(get_line[j],"%f") || !strstr(get_line[j],"%d") || !strstr(get_line[j],"%c")))
+        {
+            //printf("gt:%s",get_line[j]);
+            for(int k=0; k<=strlen(get_line[j]); k++) //satýr ayýklandý
+            {
+
+
+
+                if(get_line[j][k]==',')
+                {
+
+                    extract[r][s]='\0';
+                    r++;
+                    s=0;
+                }
+
+                else
+                {
+
+                    extract[r][s]=get_line[j][k];
+                    s++;
+                }
+            }//forun sonu
+
+            for(int k=0; k<=r; k++)
+            {
+
+
+                if( !strchr(extract[k],'[') && !strchr(extract[k],']'))
+                {
+                    //printf("%s\n",extract[k]);
+                    cnum++;
+                    cspace=1*cnum;
+
+                    //printf("\nnum:%d\n",num);
+
+
+                }
+
+                else if( strchr(extract[k],'[') && strchr(extract[k],']'))
+                {
+                    //printf("%s\n",extract[k]);
+                    for(int l=0; l<=strlen(extract[k]); l++)
+                    {
+
+                        if(extract[k][l]=='[')
+                        {
+
+                            powi++;
+
+                        }
+                    }
+
+                    arr3[p]=powi;
+                    arr2[i]=arr3[p];
+
+                    //printf("%s\n",buffer);
+                    i++;
+                    p++;
+
+                }//else ifin sonu
+
+
+            }//forun sonu
+
+            //printf("space:%d\n",space);
+
+            r=0,s=0;
+            powi=0;
+
+        }//char else ifin sonu
+
+
+
+        else if(strstr(get_line[j],"bool") && strchr(get_line[j],';')  && (!strstr(get_line[j],"%d") || !strstr(get_line[j],"%f")))
+        {
+            //printf("gt:%s",get_line[j]);
+            for(int k=0; k<=strlen(get_line[j]); k++) //satýr ayýklandý
+            {
+
+
+
+                if(get_line[j][k]==',')
+                {
+
+                    extract[r][s]='\0';
+                    r++;
+                    s=0;
+                }
+
+                else
+                {
+
+                    extract[r][s]=get_line[j][k];
+                    s++;
+                }
+            }//forun sonu
+
+            for(int k=0; k<=r; k++)
+            {
+
+
+                if( !strchr(extract[k],'[') && !strchr(extract[k],']'))
+                {
+                    //printf("%s ",extract[k]);
+                    cnum++;
+                    cspace=1*cnum;
+
+                    //printf("\nnum:%d\n",num);
+
+
+                }
+
+                else if(strchr(extract[k],'[') && strchr(extract[k],']'))
+                {
+                    //printf("%s ",extract[k]);
+                    for(int l=0; l<=strlen(extract[k]); l++)
+                    {
+
+                        if(extract[k][l]=='[')
+                        {
+
+                            powi++;
+
+                        }
+                    }
+
+                    arr3[p]=powi;
+                    arr2[i]=arr3[p];
+
+                    //printf("%s\n",buffer);
+                    i++;
+                    p++;
+
+                }//else ifin sonu
+
+
+            }//forun sonu
+
+            //printf("space:%d\n",space);
+
+            r=0,s=0;
+            powi=0;
+
+        }//bool else ifin sonu
+
+
+    }//en dýþtaki forun sonu*/
+
+    //int gecici=0;
+
+
+    for(int j=0; j<i; j++)
+    {
+
+        //printf(" %d + ",arr2[j]);
+        if(gecici<arr2[j])
+        {
+            gecici=arr2[j];
+        }
+
+    }
+    if(gecici==0) //Array yoktur.
+    {
+
+        printf("Yer karmasikligi: n + %d",cspace+fspace+space);
+        printf(" (O(n))\n");
+    }
+
+    if(gecici>0)
+    {
+
+        for(int j=0; j<=t; j++)
+        {
+            if(arr[j]>0)
+            {
+                printf("4n^%d + ",arr[j]);
+            }
+        }
+        for(int j=0; j<=m; j++)
+        {
+            if(arr1[j]>0)
+            {
+                printf("8n^%d + ",arr1[j]);
+            }
+        }
+        for(int j=0; j<=p; j++)
+        {
+            if(arr3[j]>0)
+            {
+                printf("n^%d + ",arr3[j]);
+            }
+        }
+        printf(" n + %d (O(n^%d))\n",cspace+fspace+space,gecici);
+
+    }
+
+}
+
+int y=0;
+int t=0;
+int darr[100];
+int arr[100];
+int sbtsum=0;
+
+void Running_Time(int cm,int Size)
+{
+    int line=cm+1;     
+    int eq=0;
+    int statement=0;
+    int a_statement=0;
+    int k_statement=0;
+    int degree=0;
+    int t=0;
+    int sum=1;
+    int hold=0;
+    printf("T(n): ");
+     for(int j=cm;!strstr(get_line[j],"for");j++){
+          
+          //printf("For kontrolü.\n");
+          if(strchr(get_line[j],';') && strchr(get_line[j],'=') && !strstr(get_line[j],"for")){
+              
+              eq++;
+              t=j;
+              
+          }
+     }
+    
+      for(int j=cm;j<Size;j++){
+          
+          
+          //printf("Distaki fora girdi.\n");
+          
+           if(strstr(get_line[j],"for") && (strstr(get_line[j],"++") || strstr(get_line[j],"--"))){
+               //printf("İfee girdi.\n");
+              statement++;
+              a_statement++;
+              degree++;
+              
+              
+              for(int k=line;!strchr(get_line[k],'}');k++){//Statementlar sayıldı
+                  //printf("3. fora girdi.\n");
+                    if(strchr(get_line[k],'{')){
+                        k_statement++;
+                    }
+              }//for sonu
+              int gecici=k_statement;
+              int temp=k_statement;
+              int tut=0;
+              int f_tut=0;
+              for(int k=line;k<=Size;k++){//for un bitiş satırı bulundu.
+                  //printf("4. fora girdi.\n");
+                  if(strchr(get_line[k],'}')){
+                      if(gecici==statement){
+                          tut=k;
+                          break;
+                         
+                      }
+                       --gecici;
+                  }
+                 
+              }//for un bitişi
+              //printf("tut:%d\n",tut);
+              
+              for(int k=j+1;k<=tut;k++){//for un içinde for var mı kontrolü
+                  //printf("5. fora girdi.\n");
+                  if(strstr(get_line[k],"for")){
+                      f_tut=k;
+                      break;
+                  }
+                  
+              }//for sonu
+              
+              
+              if(f_tut>0){
+                
+                for(int k=line;k<Size;k++){//for un bitiş satırı bulundu.
+                  //printf("6. fora girdi.\n");
+                  if(strchr(get_line[k],'}')){
+                      if(temp==statement+1){
+                          hold=k;
+                          break;
+                      }
+                      --temp;
+                  }
+                  
+              }//for un bitişi 
+              //printf("%d",hold);
+              
+              for(int k=j+1;k<f_tut;k++){//fora kadar kontrol edildi.
+                  //printf("1.fora girdi.\n");
+                  if(strchr(get_line[k],'=') || strstr(get_line[k],"++") || strstr(get_line[k],"--")){
+                      sum++;
+                      
+                  }//ifin bitişi
+                  
+              }//forun bitişi
+              
+              for(int k=hold;k<=tut;k++){
+                  
+                  if(strchr(get_line[k],'=') || strstr(get_line[k],"++") || strstr(get_line[k],"--")){
+                      sum++;
+                      
+                  }//ifin bitişi
+                  
+              }//forun bitişi
+              
+              
+                  
+              }//ifin bitişi
+              
+              
+              else if(f_tut==0){
+                  
+                  for(int k=j+1;k<=tut;k++){
+                      
+                    if(strchr(get_line[k],'=') || strstr(get_line[k],"++") || strstr(get_line[k],"--")){
+                      sum++;
+                      
+                  }//ifin bitişi
+                  }//for un bitişi
+              }
+              
+              //printf("sum:%d\n",sum);
+             darr[y]=degree;
+             //printf("%d",darr[y]);
+             arr[t]=sum;
+             t++;
+             y++;
+             printf("%dn^%d + ",sum,degree);
+             
+             for(int k=j;k<Size;k++){
+                  //printf("2. fora girdi.\n");
+                  if(strchr(get_line[k],'{')){
+                      //printf("State ifine girdi.\n");
+                      cm=k+1;
+                     
+                  }
+                  
+                  
+              }//for sonu
+              
+          }//else if sonu
+          
+          
+          
+      }//dıştaki for sonu
+            
+       for(int p=0,h=0;p<y && h<t;p++,h++){
+           
+           
+           
+       }
+       printf(" %d",eq);
+}//fonksiyon sonu
+
+int main()
+{
+    fp=fopen("d.txt","r");
+
+    //fgets(get_line[0],sizeof(get_line[0]),fp);
+
+    int control=0;
+    int empty;
+    int i=0;
+
+    while(!feof(fp))
+    {
+
+
+        fgets(get_line[i],sizeof(get_line[i]),fp);
+        if(strstr(get_line[i],"#include <stdio.h>") || strstr(get_line[i],"#include <stdlib.h>") || strstr(get_line[i],"printf") || strstr(get_line[i],"scanf"))
+        {
+
+            control++;
+        }
+
+        if(strstr(get_line[i],"\n"))
+        {
+            empty=0;
+        }
+
+        else
+        {
+            empty++;
+        }
+
+
+
+        //printf("%s",get_line[i]);
+        i++;
+
+    }//Bütün bilgiler char dizisine alýndý;
+
+    check_File(empty,control);//Dosya kontrolü.
+
+    for(int j=0; j<i; j++)
+    {
+        if(!strstr(get_line[j],"int main") && strchr(get_line[j],'(') && strchr(get_line[j],')') && !strchr(get_line[j],';') && strstr(get_line[j],"char") && !strstr(get_line[j],"if") && !strstr(get_line[j],"while")) ////fonksiyonsa
+        {
+            a=Recursive(j,i);
+            //printf("1. ife girdi.\n");
+        }
+
+        else if(!strstr(get_line[j],"int main") && strchr(get_line[j],'(') && strchr(get_line[j],')') && !strchr(get_line[j],';') && strstr(get_line[j],"int") && !strstr(get_line[j],"if") && !strstr(get_line[j],"while")) ////fonksiyonsa
+        {
+            a=Recursive(j,i);
+            //printf("2. ife girdi.\n");
+        }
+        else if(!strstr(get_line[j],"int main") && strchr(get_line[j],'(') && strchr(get_line[j],')') && !strchr(get_line[j],';') && strstr(get_line[j],"double") && !strstr(get_line[j],"if") && !strstr(get_line[j],"while")) ////fonksiyonsa
+        {
+            a=Recursive(j,i);
+            //printf("3. ife girdi.\n");
+        }
+        else if(!strstr(get_line[j],"int main") && strchr(get_line[j],'(') && strchr(get_line[j],')') && !strchr(get_line[j],';') && strstr(get_line[j],"float") && !strstr(get_line[j],"if") && !strstr(get_line[j],"while")) ////fonksiyonsa
+        {
+            a=Recursive(j,i);
+            //printf("4. ife girdi.\n");
+        }
+        else if(!strstr(get_line[j],"int main") && strchr(get_line[j],'(') && strchr(get_line[j],')') && !strchr(get_line[j],';') && strstr(get_line[j],"void") && !strstr(get_line[j],"if") && !strstr(get_line[j],"while")) ////fonksiyonsa
+        {
+            a=Recursive(j,i);
+            //printf("5. ife girdi.\n");
+        }
+        else
+        {
+
+        }
+
+    }
+
+    int get_bigo;
+    if(a==1)
+    {
+
+        get_bigo=1;
+
+        printf("Big O: O(n^%d)\n",get_bigo);
+    }
+
+    if(a>1)
+    {
+
+        printf("Big O: O(%d^n)\n",a);
+
+    }
+
+    //int get=0;
+    int pop=0;
+
+    for(int j=0; j<i; j++)
+    {
+
+        if(strstr(get_line[j],"int") && strchr(get_line[j],'(') && strchr(get_line[j],')') && !strchr(get_line[j],';'))
+        {
+
+            for(int k=j; k<i; k++)
+            {
+
+                if(strchr(get_line[k],'{'))
+                {
+                    pop=k;
+                    break;
+                }
+            }
+
+            get_bigo=Control_loop(pop,i);
+
+        }
+
+    }
+    if(a==0)
+    {
+
+        if(get_bigo==0)
+        {
+            printf("Big O: O(n^%d)\n",come1);
+        }
+
+        else if(get_bigo==1)
+        {
+            printf("Big O: O(logn^%d)\n",come1);
+        }
+        else if(get_bigo==2)
+        {
+
+            printf("Big O: O(n^%dlogn^%d)\n",come1,come1);
+        }
+        else
+        {
+            printf("Big o hesaplanamadi.\n");
+        }
+
+    }
+
+    if(a==0)
+    {
+        Space_Complexity(i);
+    }
+    else if(a>0)
+    {
+        for(int j=0; j<i; j++)
+        {
+            if(strstr(get_line[j],"int") && strstr(get_line[j],"main"))
+            {
+                Recursive_Space_Complexity(j,i);
+                break;
+            }
+        }
+    }
+
+     int run_state=0;
+    for(int j=0; j<i; j++)
+    {
+        if(strchr(get_line[j],'{')){
+            run_state=j;
+            Running_Time(run_state,i);
+            break;
+        }
+        
+ }
+ 
+     //run_state+=1;
+   
+
+    fclose(fp);
+    fflush(stdin);
+
+    return 0;
+}
